@@ -51,7 +51,7 @@
       font-family: 'Dancing Script', cursive;
       opacity: 1;
       transition: opacity 0.8s ease;
-      pointer-events: none;  /* 加载完成后不阻挡点击 */
+      pointer-events: none;
     }
 
     #loadingScreen.fade-out {
@@ -59,6 +59,8 @@
     }
 
     .loading-content {
+      width: 80%;
+      max-width: 400px;
       animation: floatLoading 3s infinite ease-in-out;
     }
 
@@ -69,36 +71,72 @@
     }
 
     .loading-birthday {
-      font-size: clamp(2.5rem, 12vw, 5rem);
+      font-size: clamp(2.2rem, 10vw, 4.5rem);
       font-weight: 700;
       text-shadow: 4px 4px 15px #ffe0f0, 0 0 30px #ffb6c1;
-      margin-bottom: 20px;
-      letter-spacing: 4px;
+      margin-bottom: 15px;
+      letter-spacing: 3px;
+      line-height: 1.3;
     }
 
     .loading-birthday i {
       color: #e91e63;
-      margin: 0 10px;
+      margin: 0 8px;
       animation: heartbeat 1.6s infinite;
     }
 
     .loading-sub {
       font-family: 'Quicksand', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #6d2e46;
       opacity: 0.9;
       letter-spacing: 2px;
+      margin-bottom: 25px;
     }
 
     .loading-cake {
-      font-size: 3rem;
-      margin-top: 20px;
+      font-size: 2.5rem;
+      margin-bottom: 25px;
       animation: bounce 2s infinite;
     }
 
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
+    }
+
+    /* 进度条容器 */
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0 5px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #e91e63, #ff80ab);
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ff99bb;
+      animation: progressAnimation 3s linear forwards;
+    }
+
+    @keyframes progressAnimation {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    .loading-tip {
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.8rem;
+      color: #851e4c;
+      opacity: 0.8;
+      margin-top: 8px;
+      letter-spacing: 1px;
     }
 
     /* 主画布 */
@@ -721,7 +759,7 @@
 </head>
 <body>
 
-  <!-- 加载等待页面：祝谷雨生日快乐 -->
+  <!-- 加载等待页面：祝谷雨生日快乐 + 进度条 -->
   <div id="loadingScreen">
     <div class="loading-content">
       <div class="loading-birthday">
@@ -732,6 +770,13 @@
       </div>
       <div class="loading-cake">
         🎂 🎉 🎈
+      </div>
+      <!-- 进度条 -->
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="loading-tip">
+        正在加载美好祝福...
       </div>
     </div>
   </div>
@@ -912,19 +957,18 @@
     (function(){
       "use strict";
 
-      // ---------- 加载等待页面控制 ----------
+      // ---------- 加载等待页面控制 (3秒 + 进度条) ----------
       const loadingScreen = document.getElementById('loadingScreen');
-      // 页面加载完成后淡出加载页
+      // 进度条CSS动画已设置为3秒，与淡出时间同步
       window.addEventListener('load', function() {
         setTimeout(() => {
           loadingScreen.classList.add('fade-out');
-          // 动画结束后移除元素（可选）
           setTimeout(() => {
             if (loadingScreen.parentNode) {
               loadingScreen.style.display = 'none';
             }
           }, 800);
-        }, 600); // 稍作停留，让祝福更明显
+        }, 3000); // 3秒后开始淡出
       });
 
       // ---------- 画布与粒子系统 ----------
