@@ -1,15 +1,7 @@
-jsonc
-
-复制
-
-下载
 {
-  // 假设你使用 npm，并且有一个 package.json 文件
-  "installCommand": "npm install",
-  // 假设你的 package.json 中定义了 "build" 脚本
-  "buildCommand": "npm run build",
-  // 指定构建完成后，静态文件所在的目录
+  "installCommand": "",
+  "buildCommand": "",
   "assets": {
-    "directory": "./dist" // 根据你的实际情况修改
+    "directory": "./"
   }
 }
