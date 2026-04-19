@@ -28,11 +28,80 @@
       justify-content: center;
       position: relative;
       overflow-x: hidden;
-      overflow-y: auto;            /* 允许垂直滚动 */
-      touch-action: pan-y;          /* 允许触摸滚动 */
+      overflow-y: auto;
+      touch-action: pan-y;
       padding: 8px 0;
     }
 
+    /* ---------- 加载等待页面 (Splash Screen) ---------- */
+    #loadingScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 40%, #f48fb1 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #a1304e;
+      font-family: 'Dancing Script', cursive;
+      opacity: 1;
+      transition: opacity 0.8s ease;
+      pointer-events: none;  /* 加载完成后不阻挡点击 */
+    }
+
+    #loadingScreen.fade-out {
+      opacity: 0;
+    }
+
+    .loading-content {
+      animation: floatLoading 3s infinite ease-in-out;
+    }
+
+    @keyframes floatLoading {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .loading-birthday {
+      font-size: clamp(2.5rem, 12vw, 5rem);
+      font-weight: 700;
+      text-shadow: 4px 4px 15px #ffe0f0, 0 0 30px #ffb6c1;
+      margin-bottom: 20px;
+      letter-spacing: 4px;
+    }
+
+    .loading-birthday i {
+      color: #e91e63;
+      margin: 0 10px;
+      animation: heartbeat 1.6s infinite;
+    }
+
+    .loading-sub {
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.2rem;
+      color: #6d2e46;
+      opacity: 0.9;
+      letter-spacing: 2px;
+    }
+
+    .loading-cake {
+      font-size: 3rem;
+      margin-top: 20px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* 主画布 */
     #loveCanvas {
       position: fixed;
       top: 0;
@@ -41,7 +110,6 @@
       height: 100%;
       display: block;
       pointer-events: auto;
-      /* 移除 touch-action: none，让滚动正常 */
       z-index: 1;
     }
 
@@ -260,6 +328,52 @@
       padding: 4px 12px;
       border-radius: 25px;
       font-size: 0.9rem;
+    }
+
+    /* 黄金价格卡片 */
+    .gold-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .gold-price-main {
+      font-family: 'DSEG14 Classic', 'Orbitron', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #c2185b;
+      text-shadow: 0 0 8px #ffb0c3;
+    }
+
+    .gold-change {
+      font-size: 0.9rem;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* 每日一句卡片 */
+    .daily-quote {
+      padding: 5px 5px;
+    }
+
+    .quote-content {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #3e1e2b;
+      font-style: italic;
+      margin-bottom: 8px;
+      padding: 0 5px;
+    }
+
+    .quote-author {
+      font-size: 0.85rem;
+      color: #851e4c;
+      text-align: right;
+      opacity: 0.8;
     }
 
     /* 知乎热榜卡片 */
@@ -540,6 +654,10 @@
         padding: 3px 10px;
       }
 
+      .gold-price-main {
+        font-size: 1.8rem;
+      }
+
       .fortune-content {
         grid-template-columns: 1fr;
         gap: 6px;
@@ -585,32 +703,13 @@
         font-size: 0.8rem;
         padding: 5px 6px;
       }
-    }
 
-    /* 小屏手机进一步优化 */
-    @media (max-width: 380px) {
-      h1 {
-        font-size: 2.8rem;
-      }
-
-      .wish {
-        font-size: 1.3rem;
-      }
-
-      .timer-display {
-        font-size: 1.2rem;
-      }
-
-      .timer-number {
-        min-width: 1.6em;
-      }
-
-      .bmi-value {
-        font-size: 1.4rem;
+      .quote-content {
+        font-size: 0.9rem;
       }
     }
 
-    /* 确保内容不阻挡canvas点击，但卡片内链接/滑块可点 */
+    /* 确保内容不阻挡canvas点击 */
     .content, .content * {
       pointer-events: none;
     }
@@ -621,6 +720,21 @@
   </style>
 </head>
 <body>
+
+  <!-- 加载等待页面：祝谷雨生日快乐 -->
+  <div id="loadingScreen">
+    <div class="loading-content">
+      <div class="loading-birthday">
+        <i class="fas fa-cake-candles"></i> 祝谷雨生日快乐 <i class="fas fa-cake-candles"></i>
+      </div>
+      <div class="loading-sub">
+        ✨ Happy Birthday to Gu Yu ✨
+      </div>
+      <div class="loading-cake">
+        🎂 🎉 🎈
+      </div>
+    </div>
+  </div>
 
   <canvas id="loveCanvas"></canvas>
 
@@ -653,7 +767,7 @@
       </div>
     </div>
 
-    <!-- 第一行：天气 + 知乎热榜 -->
+    <!-- 第一行：天气 + 黄金价格 -->
     <div class="info-row">
       <div class="card" style="flex:1;">
         <div class="card-header">
@@ -669,6 +783,29 @@
         </div>
       </div>
 
+      <!-- 黄金实时价格卡片 -->
+      <div class="card" style="flex:1;">
+        <div class="card-header">
+          <i class="fas fa-coins" style="color:#ffb74d;"></i>
+          <h3>黄金实时价格</h3>
+        </div>
+        <div class="gold-info">
+          <span><i class="fas fa-gem" style="color:#c2185b;"></i> 国内金价</span>
+          <span class="gold-price-main" id="goldPrice">1060.0</span>
+          <span>元/克</span>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 15px; font-size:0.8rem; opacity:0.9;">
+          <span>📈 涨跌 <span id="goldChange" style="color:#e53935;">+2.3</span> 元</span>
+          <span>📊 回收价 <span id="goldRecycle">1040</span> 元/克</span>
+        </div>
+        <div style="font-size:0.7rem; margin-top:6px; opacity:0.7;">
+          <i class="far fa-clock"></i> 数据更新于 2026.04.18
+        </div>
+      </div>
+    </div>
+
+    <!-- 第二行：知乎热榜 + 每日一句 -->
+    <div class="info-row">
       <div class="card" style="flex:1;">
         <div class="card-header">
           <i class="fab fa-zhihu" style="color:#0084ff;"></i>
@@ -679,9 +816,28 @@
           点击标题查看
         </div>
       </div>
+
+      <!-- 每日一句卡片 -->
+      <div class="card" style="flex:1;">
+        <div class="card-header">
+          <i class="fas fa-quote-right" style="color:#e91e63;"></i>
+          <h3>每日一句</h3>
+        </div>
+        <div class="daily-quote">
+          <div class="quote-content" id="dailyQuoteContent">
+            “你只管努力，剩下的交给时间。生活就像一只储钱罐，你投入的每一分努力都不会白费。”
+          </div>
+          <div class="quote-author" id="dailyQuoteAuthor">
+            —— 人民日报 · 每日金句
+          </div>
+        </div>
+        <div style="font-size:0.7rem; margin-top:8px; opacity:0.6;">
+          <i class="far fa-lightbulb"></i> 发人深省 · 每日更新
+        </div>
+      </div>
     </div>
 
-    <!-- 第二行：盒马特价 + BMI测算器 -->
+    <!-- 第三行：盒马特价 + BMI测算器 -->
     <div class="info-row">
       <div class="card" style="flex:1;">
         <div class="card-header">
@@ -756,6 +912,21 @@
     (function(){
       "use strict";
 
+      // ---------- 加载等待页面控制 ----------
+      const loadingScreen = document.getElementById('loadingScreen');
+      // 页面加载完成后淡出加载页
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          loadingScreen.classList.add('fade-out');
+          // 动画结束后移除元素（可选）
+          setTimeout(() => {
+            if (loadingScreen.parentNode) {
+              loadingScreen.style.display = 'none';
+            }
+          }, 800);
+        }, 600); // 稍作停留，让祝福更明显
+      });
+
       // ---------- 画布与粒子系统 ----------
       const canvas = document.getElementById('loveCanvas');
       const ctx = canvas.getContext('2d');
@@ -797,11 +968,18 @@
       updateLoveTimer();
       setInterval(updateLoveTimer, 1000);
 
-      // ---------- 天气 (静态) ----------
+      // ---------- 天气 ----------
       document.getElementById('weatherTemp').textContent = '16~28°C';
       document.getElementById('weatherDesc').innerHTML = '<i class="fas fa-cloud"></i> 多云有雾';
 
-      // ---------- 知乎热榜 (带超链接) ----------
+      // ---------- 黄金价格 ----------
+      document.getElementById('goldPrice').textContent = '1060.0';
+      document.getElementById('goldRecycle').textContent = '1040';
+      const goldChange = document.getElementById('goldChange');
+      goldChange.textContent = '+2.3';
+      goldChange.style.color = '#e53935';
+
+      // ---------- 知乎热榜 ----------
       const zhihuList = document.getElementById('zhihuHotList');
       const hotTopics = [
         { title: '这样发朋友圈涉嫌违法', hot: '579万', query: '这样发朋友圈涉嫌违法' },
@@ -817,6 +995,24 @@
           </span>
         </li>
       `).join('');
+
+      // ---------- 每日一句 ----------
+      const quotes = [
+        { content: '你只管努力，剩下的交给时间。生活就像一只储钱罐，你投入的每一分努力都不会白费。', author: '人民日报 · 每日金句' },
+        { content: '自身有价值了，才会像吸铁石，朋友甚至以前的陌生人都愿意转身过来与你为伴。', author: '杨绛' },
+        { content: '有人帮你，是你的幸运；无人帮你，是公正的命运。没有人该为你做什么，因为生命是你自己的。', author: '佚名' },
+        { content: '关心自己的灵魂，从来不早，也不会晚。', author: '佚名' },
+        { content: '能扛得住当下的苦，才配拥有未来的甜。生活给你阴影，是为了让你更清晰地看到光的方向。', author: '人民日报' },
+        { content: '人生只有三天，迷惑的人活在昨天，奢望的人活在明天，只有清澈的人活在今天。', author: '佚名' },
+        { content: '如果事与愿违，就相信一定另有安排。', author: '佚名' },
+        { content: '世界没有两片相同的树叶，你再不堪，也是独一无二，无须自轻自贱。', author: '佚名' }
+      ];
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+      const quoteIndex = dayOfYear % quotes.length;
+      const dailyQuote = quotes[quoteIndex];
+      document.getElementById('dailyQuoteContent').innerHTML = `“${dailyQuote.content}”`;
+      document.getElementById('dailyQuoteAuthor').textContent = `—— ${dailyQuote.author}`;
 
       // ---------- BMI 测算器 ----------
       const height = 165;
@@ -857,8 +1053,8 @@
       const fortuneDesc = document.getElementById('fortuneDesc');
 
       function generateFortune() {
-        const today = new Date();
-        const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+        const todayFortune = new Date();
+        const seed = todayFortune.getFullYear() * 10000 + (todayFortune.getMonth()+1) * 100 + todayFortune.getDate();
         const seededRandom = (s) => { let x = Math.sin(s) * 10000; return x - Math.floor(x); };
         const r1 = seededRandom(seed), r2 = seededRandom(seed+1), r3 = seededRandom(seed+2), r4 = seededRandom(seed+3), r5 = seededRandom(seed+4);
         const luckLevels = ['✨ 极佳', '🌟 良好', '☁️ 平稳', '🌧️ 稍低', '⛅ 波动'];
@@ -890,7 +1086,7 @@
       }
       generateFortune();
 
-      // ---------- 粒子系统 (仅使用click事件，不干扰滚动) ----------
+      // ---------- 粒子系统 ----------
       function drawHeart(ctx, x, y, size, color, opacity = 1) {
         ctx.save();
         ctx.globalAlpha = opacity;
@@ -1004,7 +1200,6 @@
         animationFrame = requestAnimationFrame(animate);
       }
 
-      // 仅使用 click 事件生成爱心，不干扰页面滚动
       function onCanvasClick(e) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -1025,7 +1220,6 @@
           setTimeout(()=>spawnHeartBurst(cx+20, cy+15, 4),100);
         },200);
         
-        // 只监听 click 事件，避免触摸事件阻止滚动
         canvas.addEventListener('click', onCanvasClick);
         window.addEventListener('resize', resizeCanvas);
         animate();
